@@ -1,2 +1,16 @@
 .env
-__pycache__
+*env
+venv/
+__pycache__/
+.DS_Store
+
+*mp4
+*wav
+*.jpg
+
+input/
+tests/
+
+chroma
+
+node_modules/
