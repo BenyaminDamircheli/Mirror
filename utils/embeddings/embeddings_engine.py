@@ -1,4 +1,6 @@
 from sentence_transformers import SentenceTransformer
+import numpy
+
 
 
 class Embeddings_Engine:
@@ -16,6 +18,7 @@ class Embeddings_Engine:
         # self.vision_model = AutoModel.from_pretrained("nomic-ai/nomic-embed-vision-v1.5", trust_remote_code=True)
 
     # Geneterate embeddings for text
-    def embed(self, text: list[str]):
+    def embed(self, text: list[str]) -> list[numpy.ndarray]:
         embeddings = self.model.encode(text)
         return embeddings
+        

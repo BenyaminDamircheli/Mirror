@@ -1,10 +1,9 @@
-from os.path import dirname
 import chromadb
 from chromadb.config import Settings, DEFAULT_DATABASE, DEFAULT_TENANT
 import os
 import sys
 import numpy as np
-from transformers.trainer import met
+
 
 
 from utils.embeddings.embeddings_engine import Embeddings_Engine
@@ -13,7 +12,7 @@ root_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 sys.path.append(root_dir)
 
 class SearchEngine:
-    def __init__(self) -> None:
+    def __init__(self):
         self.embeddings_engine = Embeddings_Engine("default")
         self.client = chromadb.PersistentClient(
             settings = Settings(),
@@ -29,12 +28,12 @@ class SearchEngine:
         self.collection = self.client.create_collection(collection_name, metadata={"hnswspace": "cosine"})
 
     
-    def add(self, concatenated, timestamp, filepath):
+    def add(self, concatenated, citation, filepath):
         embedding = self.embeddings_engine.embed(concatenated).tolist()
-        id_str = f"{timestamp}_{filepath}"
+        id_str = f"{filepath}::{citation}"
         self.collection.add(
             documents=[concatenated],
-            ids=[id_str],
+            ids=[f"{id_str}"],
             embeddings=[embedding],
             metadatas=[{"filepath": filepath}]
         )
@@ -42,20 +41,17 @@ class SearchEngine:
     def search(self, query_string, query_type):
         embedding = self.embeddings_engine.embed(query_string).tolist()
 
-        try:
-            if query_type != "":
-                result = self.collection.query(
+        if query_type != "":
+            result = self.collection.query(
                 query_embeddings=[embedding],
-                n_results=3,
-                include=["documents", "metadatas"]
+                include=["documents", "metadatas"],
+                n_results=3
             )
-            cleaned_result = {}
-            for i in range(len(result["ids"][0])):
-                cleaned_result[result["ids"][0][i]] = result["documents"][0][i]
-            return cleaned_result
-        except:
-            print("No results found")
-            return None
+        cleaned_result = {}
+        for i in range(len(result["ids"][0])):
+            cleaned_result[result["ids"][0][i]] = result["documents"][0][i]
+        return cleaned_result
+        
 
         
     def delete(self, collection_name: str):
