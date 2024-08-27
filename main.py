@@ -5,21 +5,22 @@ from engine import Engine
 from utils.search.search_engine import SearchEngine
 
 
+
 print("Initializing server")
 app = Flask(__name__)
 print("initializing CORS")
 CORS(app)
 print("Initializing engine")
 engine = SearchEngine()
-initial_engine = Engine()
+# initial_engine = Engine()
 
 # Initialize VideoSearchEngine
-initial_engine = Engine()
+
 
 # Process files in a specified directory
-input_directory = "/Users/benyamindamircheli/Documents/Mirror Test" # change this to a directory with random stuff
-print(f"Processing files in {input_directory}")
-initial_engine.process_all_files(input_directory)
+# input_directory = "" 
+# print(f"Processing files in {input_directory}")
+# initial_engine.process_all_files(input_directory)
 
 print('getting collection')
 print(engine.collection.get())

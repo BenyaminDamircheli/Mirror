@@ -65,7 +65,7 @@ class Engine:
         cap.release()
         return frames
     
-    def process_video(self, video_path):
+    def process_video(self, video_path, filename):
         video_clip = mp.VideoFileClip(video_path)
         fps = video_clip.fps
         frames = self.extract_frames(video_path, self.interval, fps)
@@ -86,23 +86,23 @@ class Engine:
                     video_fragment.audio.write_audiofile(temp_audio_file.name)
                     transcript = self.audio_engine.transcribe_audio(temp_audio_file.name)
                     summary = self.summary_engine.summarize(transcript)
-                
-                concat_description = f"{description} {summary}"
+                concat_description = f"Title: {filename} \n {description} \n {summary}"
                 self.search_engine.add(concat_description, start_time, video_path)
     
-    def process_pdf(self, path):
+    def process_pdf(self, path, filename):
         pdf = PdfReader(path)
 
         for idx, page in enumerate(pdf.pages):
             page_content = page.extract_text()
             self.search_engine.add(page_content, idx, path)
 
-    def process_image(self, path):
+    def process_image(self, path, filename):
         with Image.open(path) as img:
             description = self.photo_engine.describe_image(img)
-            self.search_engine.add(description, 0, path)
+            concat = f"Title: {filename} \n {description}"
+            self.search_engine.add(concat, 0, path)
 
-    def process_text(self, path):
+    def process_text(self, path,filename):
         with open(path, "r") as file:
             text = file.read()
         
@@ -113,20 +113,21 @@ class Engine:
             group_text = " ".join(group)
             print(group_text)
             if group_text:
-                self.search_engine.add(group_text, idx, path)
+                concat = f"Title: {filename} \n {group_text}"
+                self.search_engine.add(concat, idx, path)
     
     def process_all_files(self, path):
         for root, dirs, files in os.walk(path):
             for file in files:
                 file_path = os.path.join(root, file)
                 if file.endswith(".pdf"):
-                    self.process_pdf(file_path)
+                    self.process_pdf(file_path, file)
                 elif file.endswith((".txt", ".md")):
-                    self.process_text(file_path)
+                    self.process_text(file_path, file)
                 elif file.endswith((".jpg", ".png", ".jpeg")):
-                    self.process_image(file_path)
+                    self.process_image(file_path, file)
                 elif file.endswith(".mp4"):
-                    self.process_video(file_path)
+                    self.process_video(file_path, file)
                 else:
                     print(f"Skipping unsupported file type: {file_path}")
 
