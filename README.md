@@ -1,7 +1,5 @@
 # Mirror
 
-### Winner of "Best Use of AI" and "Best Productivity Hack" awards at 2024 NwHacks Hackathon.
-
 Mirror is a self-hosted multimodal AI tool that can answer questions about all of your files, images, videos, audio and soon online search history and messages!
 
 Mirror was something that I wish existed, so I built it.
